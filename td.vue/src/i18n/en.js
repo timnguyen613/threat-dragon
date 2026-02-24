@@ -212,6 +212,8 @@ const eng = {
             redo: 'Redo edit',
             shortcuts: 'Keyboard shortcuts',
             toggleGrid: 'Toggle grid',
+            toggleSideBar: 'Toggle sidebar',
+            toggleBottomBar: 'Toggle bottom bar',
             undo: 'Undo edit',
             zoomIn: 'Zoom in',
             zoomOut: 'Zoom out'
@@ -302,8 +304,8 @@ const eng = {
         saveModel: 'Save Model',
         saveModelAs: 'Save Model As',
         search: 'Search',
-        next:'Next',
-        previous:'Previous'
+        next: 'Next',
+        previous: 'Previous'
     },
     cards: {
         details: 'Card details',

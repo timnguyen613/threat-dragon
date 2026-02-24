@@ -1,30 +1,30 @@
 <template>
     <div>
         <b-row>
-            <b-col md="2">
+            <b-col md="2" v-show="showSideBar">
                 <div ref="stencil_container"></div>
             </b-col>
-            <b-col md="10">
+            <b-col :md="showSideBar ? 10 : 12">
                 <b-row>
                     <b-col>
                         <h3 class="td-graph-title">{{ diagram.title }}</h3>
                     </b-col>
                     <b-col align="right">
-                        <td-graph-buttons :graph="graph" @saved="saved" @closed="closed" />
+                        <td-graph-buttons :graph="graph" @saved="saved" @closed="closed" @toggleSideBar="showSideBar = !showSideBar" @toggleBottomBar="showBottomBar = !showBottomBar" />
                     </b-col>
                 </b-row>
                 <b-row>
-                    <b-col style="display: flex;    width: 100vw; ">
+                    <b-col style="display: flex; width: 100vw;">
                         <div
                             id="graph-container"
                             ref="graph_container"
-                            style="height: 65vh; width: 100%; flex: 1; "
+                            :style="{ height: showBottomBar ? '65vh' : 'calc(100vh - 110px)', width: '100%', flex: 1 }"
                         ></div>
                     </b-col>
                 </b-row>
             </b-col>
         </b-row>
-        <td-graph-meta @threatSelected="threatSelected" @threatSuggest="threatSuggest" />
+        <td-graph-meta v-show="showBottomBar" @threatSelected="threatSelected" @threatSuggest="threatSuggest" />
 
         <div>
             <td-keyboard-shortcuts />
@@ -74,13 +74,46 @@ export default {
     }),
     data() {
         return {
-            graph: null
+            graph: null,
+            showSideBar: true,
+            showBottomBar: true
         };
+    },
+    watch: {
+        showBottomBar() {
+            this.handleResize();
+        },
+        showSideBar() {
+            this.handleResize();
+        }
     },
     async mounted() {
         this.init();
     },
     methods: {
+        handleResize() {
+            const el = this.$refs.graph_container;
+            if (!this.graph || !el) return;
+
+            // Capture the state before Vue applies its DOM updates
+            const oldRect = el.getBoundingClientRect();
+            const oldTranslate = this.graph.translate();
+
+            this.$nextTick(() => {
+                const newRect = el.getBoundingClientRect();
+
+                // Compute how many pixels the container moved on the screen
+                const dx = newRect.left - oldRect.left;
+                const dy = newRect.top - oldRect.top;
+
+                // Explicitly resize the graph to match new DOM dimensions
+                this.graph.resize(el.offsetWidth, el.offsetHeight);
+
+                // Force the translation to be the old translation minus the physical container shift
+                // This keeps the diagram perfectly pinned on the screen visually
+                this.graph.translate(oldTranslate.tx - dx, oldTranslate.ty - dy);
+            });
+        },
         init() {
             this.graph = diagramService.edit(this.$refs.graph_container, this.diagram);
             stencil.get(this.graph, this.$refs.stencil_container);

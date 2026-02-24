@@ -43,6 +43,18 @@
             :title="$t('threatmodel.buttons.toggleGrid')"
             text="" />
 
+        <td-form-button
+            :onBtnClick="toggleSideBar"
+            icon="columns"
+            :title="$t('threatmodel.buttons.toggleSideBar')"
+            text="" />
+
+        <td-form-button
+            :onBtnClick="toggleBottomBar"
+            icon="caret-square-down"
+            :title="$t('threatmodel.buttons.toggleBottomBar')"
+            text="" />
+
         <b-dropdown right :text="$t('forms.export')" id="export-graph-btn">
             <b-dropdown-item @click="exportPNG" id="export-graph-png">
                 PNG
@@ -136,6 +148,12 @@ export default {
                 this.graph.showGrid();
                 this.gridShowing = true;
             }
+        },
+        toggleSideBar() {
+            this.$emit('toggleSideBar');
+        },
+        toggleBottomBar() {
+            this.$emit('toggleBottomBar');
         },
         async exportPNG() {
             await this.withSelectionCleared(() => {
