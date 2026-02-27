@@ -1,6 +1,6 @@
 import shapes from './shapes/index.js';
 import { tc } from '@/i18n/index.js';
-import { Stencil as DefaultStencil } from '@antv/x6-plugin-stencil';
+import { Stencil as DefaultStencil } from '@antv/x6';
 
 const getStencilConfig = (target) => ({
     title: tc('threatmodel.stencil.entities'),

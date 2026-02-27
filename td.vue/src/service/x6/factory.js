@@ -1,8 +1,8 @@
-import { Addon, Graph } from '@antv/x6';
+import { Stencil, Graph } from '@antv/x6';
 
 // the entity side bar is an X6 stencil add-on
 const stencil = (config) => {
-    return new Addon.Stencil(config);
+    return new Stencil(config);
 };
 
 // the threat diagram is an X6 graph
