@@ -95,23 +95,24 @@ export default {
             const el = this.$refs.graph_container;
             if (!this.graph || !el) return;
 
-            // Capture the state before Vue applies its DOM updates
-            const oldRect = el.getBoundingClientRect();
-            const oldTranslate = this.graph.translate();
+            // Find the logical point in the center of the current container before layout changes
+            const bounds = el.getBoundingClientRect();
+            const centerLogicalPoint = this.graph.clientToLocal(
+                bounds.left + bounds.width / 2,
+                bounds.top + bounds.height / 2
+            );
 
             this.$nextTick(() => {
-                const newRect = el.getBoundingClientRect();
-
-                // Compute how many pixels the container moved on the screen
-                const dx = newRect.left - oldRect.left;
-                const dy = newRect.top - oldRect.top;
-
-                // Explicitly resize the graph to match new DOM dimensions
+                // Resize the viewport correctly inside Scroller bounds
                 this.graph.resize(el.offsetWidth, el.offsetHeight);
 
-                // Force the translation to be the old translation minus the physical container shift
-                // This keeps the diagram perfectly pinned on the screen visually
-                this.graph.translate(oldTranslate.tx - dx, oldTranslate.ty - dy);
+                // Command the Scroller to maintain focus on the same logical center point 
+                // This prevents diagram "jumping" or disappearing into deep space.
+                if (centerLogicalPoint) {
+                    this.graph.centerPoint(centerLogicalPoint.x, centerLogicalPoint.y);
+                } else {
+                    this.graph.centerContent();
+                }
             });
         },
         init() {
